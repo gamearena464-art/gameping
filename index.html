@@ -48,6 +48,25 @@ function geschenk({name='Gast',team='m',geschenk='rose',anzahl=1,muenzen}={}){if
 function resetListe(){daten.spender={};daten.marke=Date.now();aktualisieren();$('liste').scrollTop=0;}
 $('resetListe').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();resetListe();});
 document.querySelectorAll('.giftbtn').forEach(btn=>btn.addEventListener('click',()=>{if(spielBeendet){alert('Die Spielrunde ist beendet.');return}geschenk({name:btn.dataset.team==='m'?'Test Girls':'Test Boys',team:btn.dataset.team,geschenk:btn.dataset.gift,anzahl:1})}));
+// Tastatur-Test: 1=Rose/Girls, 2=Fingerherz/Girls, 3=Herz/Boys, 4=Panda/Boys.
+// Eingaben in Textfeldern werden ignoriert, damit die Verwaltung weiter nutzbar bleibt.
+const tastaturGeschenke = {
+  '1': {name:'Tastatur-Test Rose', team:'m', geschenk:'rose', anzahl:1},
+  '2': {name:'Tastatur-Test Fingerherz', team:'m', geschenk:'fingerherz', anzahl:1},
+  '3': {name:'Tastatur-Test Herz', team:'j', geschenk:'herz', anzahl:1},
+  '4': {name:'Tastatur-Test Panda', team:'j', geschenk:'panda', anzahl:1}
+};
+addEventListener('keydown', e => {
+  if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
+  const tag = e.target && e.target.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable)) return;
+  const aktion = tastaturGeschenke[e.key];
+  if (!aktion) return;
+  e.preventDefault();
+  if (spielBeendet) { alert('Die Spielrunde ist beendet.'); return; }
+  geschenk(aktion);
+});
+
 function timerAktualisieren(){const rest=Math.max(0,Math.floor(spielSekunden));const m=Math.floor(rest/60),sec=rest%60;$('countdown').textContent=String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');if(rest<=0&&!spielBeendet){spielBeendet=true;$('countdown').textContent='00:00';$('countdown').style.color='#ff4057';}}
 function resetPruefen(){const d=new Date(),mark=new Date(daten.marke);if((daten.automatik==='tag'&&d.toDateString()!==mark.toDateString())||(daten.automatik==='woche'&&Math.floor((Date.now()-daten.marke)/604800000)>0)){daten.spender={};daten.marke=Date.now();aktualisieren()}}
 async function testSenden(d){if(verbunden){try{const r=await fetch('/ereignis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(r.ok)return}catch{}}geschenk(d)}$('senden').onclick=()=>testSenden({name:$('namewahl').value,team:$('teamwahl').value,geschenk:$('geschenkwahl').value,anzahl:$('mengewahl').value});$('mwerfen').onclick=()=>testSenden({name:'Test Girls',team:'m'});$('jwerfen').onclick=()=>testSenden({name:'Test Boys',team:'j'});function neueRundeStarten(){daten.runde++;daten.m=0;daten.j=0;kugeln=[];schlange=[];zeit=0;letzterZeitpunkt=0;spielSekunden=600;spielBeendet=false;$('countdown').style.color='#ffe16b';timerAktualisieren();if(daten.automatik==='runde'){daten.spender={};daten.marke=Date.now()}aktualisieren()}$('neu').onclick=neueRundeStarten;$('neueRundeUnten').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();neueRundeStarten()});$('null').onclick=()=>{if(confirm('Alle 20 Ranglistenplätze und Spielerdaten löschen?')){daten.spender={};daten.marke=Date.now();aktualisieren()}};$('automatik').onchange=e=>{daten.automatik=e.target.value;daten.marke=Date.now();speichern()};resetPruefen();aktualisieren();timerAktualisieren();setInterval(resetPruefen,60000);
