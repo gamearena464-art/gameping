@@ -1,4 +1,4 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Girls gegen Boys – Neon-Kugelspiel (aktualisiert)</title><style>
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Girls gegen Boys – Neon-Kugelspiel (TikFinity)</title><style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Permanent+Marker&display=swap');
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#001018;color:#fff;font-family:Rajdhani,Arial,sans-serif;overflow:hidden}
 #buehne{width:900px;height:1600px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(var(--mass,1));transform-origin:center;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#075951 0%,#003438 40%,#00121d 82%)}
@@ -60,7 +60,13 @@ addEventListener('keydown', e => {
   if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
   const tag = e.target && e.target.tagName;
   if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable)) return;
-  const aktion = tastaturGeschenke[e.key];
+  const tikfinityTastaturGeschenke = {
+   'F13': {name:'TikFinity Rose', team:'m', geschenk:'rose', anzahl:1},
+   'F14': {name:'TikFinity Fingerherz', team:'m', geschenk:'fingerherz', anzahl:1},
+   'F15': {name:'TikFinity Herz', team:'j', geschenk:'herz', anzahl:1},
+   'F16': {name:'TikFinity Panda', team:'j', geschenk:'panda', anzahl:1}
+ };
+ const aktion = tikfinityTastaturGeschenke[e.key] || tastaturGeschenke[e.key];
   if (!aktion) return;
   e.preventDefault();
   if (spielBeendet) { alert('Die Spielrunde ist beendet.'); return; }
